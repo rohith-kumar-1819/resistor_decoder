@@ -1,7 +1,40 @@
 import streamlit as st
 import urllib.parse
 
-# 1. Python Dictionaries
+# 1. Web UI Setup (Wide layout with vibrant gradient & glassmorphic card styling)
+st.set_page_config(page_title="Python Resistor Decoder", page_icon="Ω", layout="wide")
+
+st.markdown("""
+    <style>
+    .stApp {
+        background: linear-gradient(135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+        background-attachment: fixed;
+    }
+    /* Glassmorphism Card Container for High Contrast and Readability */
+    .block-container {
+        background: rgba(18, 18, 28, 0.9);
+        border-radius: 24px;
+        padding: 3rem 2rem;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(12px);
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+    /* Crisp text colors for clear readability */
+    h1, h2, h3, p, label, .stRadio label {
+        color: #FFFFFF !important;
+        text-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+    }
+    /* Selectbox styling inside card */
+    .stSelectbox div[data-baseweb="select"] {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# 2. Python Dictionaries
 digits = {
     "Black": 0, "Brown": 1, "Red": 2, "Orange": 3, "Yellow": 4,
     "Green": 5, "Blue": 6, "Violet": 7, "Gray": 8, "White": 9
@@ -22,37 +55,21 @@ COLOR_HEX = {
     "Gray": "#808080", "White": "#FFFFFF", "Gold": "#FFD700", "Silver": "#C0C0C0"
 }
 
-# 2. Formatting Function
+# 3. Formatting Function
 def format_resistance(value):
     if value >= 1_000_000_000: return f"{value / 1_000_000_000:.2f} GΩ"
     elif value >= 1_000_000: return f"{value / 1_000_000:.2f} MΩ"
     elif value >= 1000: return f"{value / 1000:.2f} kΩ"
     else: return f"{value:g} Ω"
 
-# 3. Web UI Setup (Wide layout with a vibrant colorful background)
-st.set_page_config(page_title="Python Resistor Decoder", page_icon="Ω", layout="wide")
-
-st.markdown("""
-    <style>
-    .stApp {
-        background: linear-gradient(135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
-        background-attachment: fixed;
-    }
-    h1, h2, h3, p, label, .stRadio div, .stMarkdown {
-        color: #FFFFFF !important;
-        text-shadow: 0px 1px 3px rgba(0,0,0,0.3);
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 # Helper function to generate decorative side resistors
 def deco_resistor(c1, c2, c3, c4):
     return f"""
     <div style="text-align: center; margin-bottom: 25px;">
-        <svg width="130" height="50" viewBox="0 0 130 50">
+        <svg width="110" height="45" viewBox="0 0 130 50">
             <line x1="5" y1="25" x2="35" y2="25" stroke="#FFF" stroke-width="4"/>
             <line x1="95" y1="25" x2="125" y2="25" stroke="#FFF" stroke-width="4"/>
-            <path d="M 35 25 Q 40 10 55 10 L 75 10 Q 90 10 95 25 Q 90 40 75 40 L 55 40 Q 40 40 35 25 Z" fill="#D2B48C" stroke="#333" stroke-width="2"/>
+            <path d="M 35 25 Q 40 10 55 10 L 75 10 Q 90 10 95 25 Q 90 40 75 40 L 55 40 Q 40 40 35 25 Z" fill="#D2B48C" stroke="#222" stroke-width="2"/>
             <rect x="52" y="12" width="5" height="26" fill="{c1}"/>
             <rect x="62" y="12" width="5" height="26" fill="{c2}"/>
             <rect x="72" y="12" width="5" height="26" fill="{c3}"/>
@@ -66,8 +83,7 @@ left_col, center_col, right_col = st.columns([1, 4, 1])
 
 # --- LEFT DECORATIVE COLUMN ---
 with left_col:
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; font-weight: bold;'>⚡ Lab Kit</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-weight: bold; color: #fff;'>⚡ Lab Kit</p>", unsafe_allow_html=True)
     st.markdown(deco_resistor("#FF0000", "#FF0000", "#8B4513", "#FFD700"), unsafe_allow_html=True)
     st.markdown(deco_resistor("#8B4513", "#000000", "#FFA500", "#C0C0C0"), unsafe_allow_html=True)
     st.markdown(deco_resistor("#0000FF", "#8A2BE2", "#008000", "#FFD700"), unsafe_allow_html=True)
@@ -131,7 +147,7 @@ with center_col:
 
     st.markdown(resistor_svg, unsafe_allow_html=True)
 
-    # Display Results
+    # Display Results clearly
     st.divider()
     st.success(f"### Resistance: **{format_resistance(final_res)}**")
     st.info(f"### Tolerance: **±{tol_val}%**")
@@ -145,7 +161,7 @@ with center_col:
     st.markdown(
         f"""
         <a href="{whatsapp_link}" target="_blank">
-            <button style="background-color: #25D366; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;">
+            <button style="background-color: #25D366; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
                 💬 Share on WhatsApp
             </button>
         </a>
@@ -155,8 +171,7 @@ with center_col:
 
 # --- RIGHT DECORATIVE COLUMN ---
 with right_col:
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; font-weight: bold;'>🎨 Colors</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-weight: bold; color: #fff;'>🎨 Colors</p>", unsafe_allow_html=True)
     st.markdown(deco_resistor("#0000FF", "#FFA500", "#8B4513", "#FFD700"), unsafe_allow_html=True)
     st.markdown(deco_resistor("#8A2BE2", "#008000", "#FF0000", "#C0C0C0"), unsafe_allow_html=True)
     st.markdown(deco_resistor("#FFFF00", "#000000", "#FF0000", "#FFD700"), unsafe_allow_html=True)
