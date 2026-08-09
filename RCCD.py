@@ -1,5 +1,4 @@
 import streamlit as st
-import matplotlib.pyplot as plt
 import urllib.parse
 
 
@@ -15,7 +14,7 @@ st.set_page_config(
 
 
 # ============================================================
-# RESISTOR DATA
+# RESISTOR COLOR DATA
 # ============================================================
 
 digits = {
@@ -58,26 +57,28 @@ tolerances = {
 }
 
 
-# Matplotlib color names
+# ============================================================
+# COLOR EMOJIS
+# ============================================================
 
-color_map = {
-    "Black": "black",
-    "Brown": "brown",
-    "Red": "red",
-    "Orange": "orange",
-    "Yellow": "yellow",
-    "Green": "green",
-    "Blue": "blue",
-    "Violet": "violet",
-    "Gray": "gray",
-    "White": "white",
-    "Gold": "gold",
-    "Silver": "silver"
+color_emoji = {
+    "Black": "⬛",
+    "Brown": "🟫",
+    "Red": "🟥",
+    "Orange": "🟧",
+    "Yellow": "🟨",
+    "Green": "🟩",
+    "Blue": "🟦",
+    "Violet": "🟪",
+    "Gray": "⬜",
+    "White": "⬜",
+    "Gold": "🟨",
+    "Silver": "⬜"
 }
 
 
 # ============================================================
-# FUNCTIONS
+# HELPER FUNCTIONS
 # ============================================================
 
 def format_resistance(value):
@@ -95,121 +96,93 @@ def format_resistance(value):
         return f"{value:g} Ω"
 
 
-def draw_resistor(bands):
-    """
-    Draw resistor using Matplotlib.
-    No HTML/SVG is used.
-    """
-
-    fig, ax = plt.subplots(figsize=(8, 2))
-
-    # Resistor body
-    body = plt.Rectangle(
-        (2, 0.3),
-        6,
-        1.4,
-        facecolor="#D2B48C",
-        edgecolor="black",
-        linewidth=2
-    )
-
-    ax.add_patch(body)
-
-    # Left wire
-    ax.plot(
-        [0, 2],
-        [1, 1],
-        color="black",
-        linewidth=5
-    )
-
-    # Right wire
-    ax.plot(
-        [8, 10],
-        [1, 1],
-        color="black",
-        linewidth=5
-    )
-
-    # Draw bands
-    band_positions = []
-
-    if len(bands) == 3:
-        band_positions = [3.0, 4.0, 5.0]
-
-    elif len(bands) == 4:
-        band_positions = [3.0, 4.0, 5.0, 6.2]
-
-    elif len(bands) == 5:
-        band_positions = [2.8, 3.7, 4.6, 5.5, 6.7]
-
-    for position, band in zip(band_positions, bands):
-
-        rect = plt.Rectangle(
-            (position, 0.3),
-            0.22,
-            1.4,
-            facecolor=color_map[band],
-            edgecolor="black",
-            linewidth=0.8
-        )
-
-        ax.add_patch(rect)
-
-    ax.set_xlim(0, 10)
-    ax.set_ylim(0, 2)
-    ax.axis("off")
-
-    st.pyplot(fig, use_container_width=True)
-
-    plt.close(fig)
+def band_display(color):
+    return f"{color_emoji.get(color, '⬜')} {color}"
 
 
-def reset():
-    st.session_state.clear()
+def reset_decoder():
+
+    keys = list(st.session_state.keys())
+
+    for key in keys:
+        del st.session_state[key]
+
     st.rerun()
 
 
 # ============================================================
-# TITLE
+# HEADER
 # ============================================================
 
 st.title("Ω Resistor Color Code Decoder")
 
 st.write(
-    "A Python-based resistor calculator using "
-    "dictionaries, conditional logic and Streamlit."
+    "A Python-based utility for decoding resistor color bands, "
+    "calculating resistance, tolerance and resistance range."
+)
+
+st.caption(
+    "Built with Python • Streamlit • Electronics Fundamentals"
 )
 
 st.divider()
 
 
 # ============================================================
-# MAIN LAYOUT
+# PAGE LAYOUT
 # ============================================================
 
-left, center, right = st.columns([1, 5, 1])
+left_col, main_col, right_col = st.columns(
+    [1, 5, 1],
+    gap="large"
+)
 
 
 # ============================================================
-# LEFT PANEL
+# LEFT SIDE
 # ============================================================
 
-with left:
+with left_col:
 
     st.subheader("⚡ Lab Kit")
 
-    st.write("🔴 🟡 🟤")
-    st.write("🟤 ⚫ 🟠")
-    st.write("🔵 🟣 🟢")
-    st.write("🟠 🟡 🔴")
+    st.write("🟥 🟨 🟫")
+    st.write("🟫 ⬛ 🟧")
+    st.write("🟦 🟪 🟩")
+    st.write("🟧 🟨 🟥")
+
+    st.divider()
+
+    st.caption("Electronics")
+    st.caption("Resistors")
+    st.caption("Color Codes")
 
 
 # ============================================================
-# CENTER PANEL
+# RIGHT SIDE
 # ============================================================
 
-with center:
+with right_col:
+
+    st.subheader("🎨 Colors")
+
+    st.write("🟦 🟧 🟫")
+    st.write("🟪 🟩 🟥")
+    st.write("🟨 ⬛ 🟥")
+    st.write("⬜ 🟫 ⬜")
+
+    st.divider()
+
+    st.caption("0–9")
+    st.caption("Multiplier")
+    st.caption("Tolerance")
+
+
+# ============================================================
+# MAIN APPLICATION
+# ============================================================
+
+with main_col:
 
     st.header("🔧 Resistor Configuration")
 
@@ -228,10 +201,10 @@ with center:
 
 
     # --------------------------------------------------------
-    # FIRST BAND
+    # FIRST BAND OPTIONS
     # --------------------------------------------------------
 
-    # Black cannot normally be the first significant digit.
+    # Black is not normally used as the first significant digit.
 
     first_band_colors = [
         "Brown",
@@ -247,7 +220,7 @@ with center:
 
 
     # ========================================================
-    # 3-BAND RESISTOR
+    # 3-BAND
     # ========================================================
 
     if band_count == 3:
@@ -275,12 +248,12 @@ with center:
                 list(multipliers.keys())
             )
 
-        base = (
+        base_value = (
             digits[b1] * 10
             + digits[b2]
         )
 
-        tolerance = 20
+        tolerance_value = 20
 
         bands = [
             b1,
@@ -290,7 +263,7 @@ with center:
 
 
     # ========================================================
-    # 4-BAND RESISTOR
+    # 4-BAND
     # ========================================================
 
     elif band_count == 4:
@@ -326,12 +299,12 @@ with center:
                 index=list(tolerances.keys()).index("Gold")
             )
 
-        base = (
+        base_value = (
             digits[b1] * 10
             + digits[b2]
         )
 
-        tolerance = tolerances[tolerance_band]
+        tolerance_value = tolerances[tolerance_band]
 
         bands = [
             b1,
@@ -342,7 +315,7 @@ with center:
 
 
     # ========================================================
-    # 5-BAND RESISTOR
+    # 5-BAND
     # ========================================================
 
     else:
@@ -385,13 +358,13 @@ with center:
                 index=list(tolerances.keys()).index("Gold")
             )
 
-        base = (
+        base_value = (
             digits[b1] * 100
             + digits[b2] * 10
             + digits[b3]
         )
 
-        tolerance = tolerances[tolerance_band]
+        tolerance_value = tolerances[tolerance_band]
 
         bands = [
             b1,
@@ -403,127 +376,148 @@ with center:
 
 
     # ========================================================
-    # CALCULATE
+    # CALCULATION
     # ========================================================
 
     multiplier_value = multipliers[multiplier]
 
-    resistance = base * multiplier_value
+    resistance = base_value * multiplier_value
 
-    minimum = resistance * (1 - tolerance / 100)
+    minimum_resistance = (
+        resistance * (1 - tolerance_value / 100)
+    )
 
-    maximum = resistance * (1 + tolerance / 100)
+    maximum_resistance = (
+        resistance * (1 + tolerance_value / 100)
+    )
 
 
     # ========================================================
-    # RESISTOR VISUALIZATION
+    # RESISTOR PREVIEW
     # ========================================================
 
     st.subheader("🎨 Resistor Preview")
 
-    draw_resistor(bands)
+    # Native Streamlit representation
+    preview = "──── "
+
+    for band in bands:
+        preview += color_emoji.get(band, "⬜") + " "
+
+    preview += "────"
+
+    st.write(
+        preview,
+        unsafe_allow_html=False
+    )
+
+    # Show band names
+    st.caption(
+        "  •  ".join(bands)
+    )
 
 
     # ========================================================
     # RESULT
     # ========================================================
 
-    st.subheader("📊 Result")
+    st.divider()
 
-    result_col1, result_col2 = st.columns(2)
+    st.subheader("📊 Calculated Result")
 
-    with result_col1:
+    result1, result2 = st.columns(2)
+
+    with result1:
 
         st.metric(
             "Resistance",
             format_resistance(resistance)
         )
 
-    with result_col2:
+    with result2:
 
         st.metric(
             "Tolerance",
-            f"±{tolerance:g}%"
+            f"±{tolerance_value:g}%"
         )
 
 
     # ========================================================
-    # CALCULATION
+    # CALCULATION BREAKDOWN
     # ========================================================
 
-    st.subheader("🧮 Calculation")
+    st.subheader("🧮 Calculation Breakdown")
 
     st.code(
-        f"""Significant digits = {base}
-Multiplier = {multiplier_value:g}
+        f"""Significant Digits : {base_value}
+Multiplier         : × {multiplier_value:g}
 
-Resistance =
-{base} × {multiplier_value:g}
-
+Resistance
+= {base_value} × {multiplier_value:g}
 = {resistance:g} Ω
 
-Tolerance = ±{tolerance:g}%""",
+Tolerance
+= ±{tolerance_value:g}%""",
         language="text"
     )
 
 
     # ========================================================
-    # RANGE
+    # RESISTANCE RANGE
     # ========================================================
 
     st.subheader("📏 Resistance Range")
 
-    c1, c2, c3 = st.columns(3)
+    range1, range2, range3 = st.columns(3)
 
-    with c1:
+    with range1:
 
         st.metric(
             "Minimum",
-            format_resistance(minimum)
+            format_resistance(minimum_resistance)
         )
 
-    with c2:
+    with range2:
 
         st.metric(
             "Nominal",
             format_resistance(resistance)
         )
 
-    with c3:
+    with range3:
 
         st.metric(
             "Maximum",
-            format_resistance(maximum)
+            format_resistance(maximum_resistance)
         )
 
 
     # ========================================================
-    # RESET
+    # ACTIONS
     # ========================================================
 
-    if st.button(
-        "↻ Reset Decoder",
-        use_container_width=True
-    ):
-        reset()
+    st.subheader("🔄 Actions")
+
+    action1, action2 = st.columns(2)
+
+    with action1:
+
+        if st.button(
+            "↻ Reset Decoder",
+            use_container_width=True
+        ):
+            reset_decoder()
+
+
+    with action2:
+
+        st.write(
+            "Change any band above to calculate again."
+        )
 
 
 # ============================================================
-# RIGHT PANEL
-# ============================================================
-
-with right:
-
-    st.subheader("🎨 Colors")
-
-    st.write("🔵 🟠 🟤")
-    st.write("🟣 🟢 🔴")
-    st.write("🟡 ⚫ 🔴")
-    st.write("⚪ 🟤 🩶")
-
-
-# ============================================================
-# COLOR REFERENCE
+# COLOR REFERENCE TABLE
 # ============================================================
 
 st.divider()
@@ -532,23 +526,19 @@ st.header("📚 Resistor Color Reference")
 
 reference_data = []
 
-for color in digits:
-
-    tolerance_value = tolerances.get(color, "—")
+for color, digit in digits.items():
 
     reference_data.append({
         "Color": color,
-        "Digit": digits[color],
-        "Multiplier": multipliers[color],
+        "Digit": digit,
+        "Multiplier": f"×{multipliers[color]:g}",
         "Tolerance": (
-            f"±{tolerance_value}%"
-            if tolerance_value != "—"
+            f"±{tolerances[color]}%"
+            if color in tolerances
             else "—"
         )
     })
 
-
-# Add Gold and Silver separately
 
 reference_data.append({
     "Color": "Gold",
@@ -573,7 +563,56 @@ st.dataframe(
 
 
 # ============================================================
-# ABOUT
+# HOW IT WORKS
+# ============================================================
+
+st.divider()
+
+st.header("📖 How the Decoder Works")
+
+info1, info2, info3 = st.columns(3)
+
+with info1:
+
+    st.subheader("3-Band")
+
+    st.write(
+        "Two significant digits + multiplier."
+    )
+
+    st.code(
+        "R = (10D₁ + D₂) × 10ᴹ"
+    )
+
+
+with info2:
+
+    st.subheader("4-Band")
+
+    st.write(
+        "Two significant digits + multiplier + tolerance."
+    )
+
+    st.code(
+        "R = (10D₁ + D₂) × 10ᴹ"
+    )
+
+
+with info3:
+
+    st.subheader("5-Band")
+
+    st.write(
+        "Three significant digits + multiplier + tolerance."
+    )
+
+    st.code(
+        "R = (100D₁ + 10D₂ + D₃) × 10ᴹ"
+    )
+
+
+# ============================================================
+# ABOUT PROJECT
 # ============================================================
 
 st.divider()
@@ -582,36 +621,37 @@ about1, about2 = st.columns(2)
 
 with about1:
 
-    st.subheader("💡 About")
+    st.subheader("💡 About the Project")
 
     st.write(
-        "This application decodes resistor color bands and "
-        "calculates resistance, tolerance and resistance range."
+        "This application is a Python-based resistor color "
+        "code decoder designed to quickly determine resistance "
+        "values from standard resistor color bands."
     )
 
     st.write(
-        "It supports 3-band, 4-band and 5-band resistor "
-        "configurations."
+        "It supports 3-band, 4-band and 5-band resistors."
     )
 
 
 with about2:
 
-    st.subheader("🛠 Technologies")
+    st.subheader("🛠 Technologies Used")
 
     st.write("• Python")
     st.write("• Streamlit")
-    st.write("• Python Dictionaries")
+    st.write("• Dictionaries")
     st.write("• Conditional Logic")
-    st.write("• Matplotlib")
-    st.write("• Electronics fundamentals")
+    st.write("• Electronics Fundamentals")
 
 
 # ============================================================
-# WHATSAPP SHARE
+# SHARE
 # ============================================================
 
 st.divider()
+
+st.subheader("🔗 Share Project")
 
 app_url = "https://resistor-color-code-decoder.streamlit.app"
 
@@ -625,8 +665,10 @@ whatsapp_url = (
     + urllib.parse.quote(message)
 )
 
-st.markdown(
-    f"Share your project: {whatsapp_url}"
+st.link_button(
+    "💬 Share on WhatsApp",
+    whatsapp_url,
+    use_container_width=True
 )
 
 
@@ -634,6 +676,9 @@ st.markdown(
 # FOOTER
 # ============================================================
 
+st.divider()
+
 st.caption(
-    "Ω Resistor Color Code Decoder • Built with Python & Streamlit"
+    "Ω Resistor Color Code Decoder • "
+    "Built with Python & Streamlit"
 )
