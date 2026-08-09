@@ -59,3 +59,22 @@ final_res = base * multipliers[mult]
 st.divider()
 st.success(f"### Resistance: **{format_resistance(final_res)}**")
 st.info(f"### Tolerance: **±{tol_val}%**")
+
+import urllib.parse
+
+# WhatsApp Share Button
+st.divider()
+app_url = "https://resistor-color-code-decoder.streamlit.app"
+msg = f"Check out my Python Resistor Color Code Decoder app: {app_url}"
+whatsapp_link = f"https://api.whatsapp.com/send?text={urllib.parse.quote(msg)}"
+
+st.markdown(
+    f"""
+    <a href="{whatsapp_link}" target="_blank">
+        <button style="background-color: #25D366; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;">
+            💬 Share on WhatsApp
+        </button>
+    </a>
+""",
+    unsafe_allow_html=True,
+)   
