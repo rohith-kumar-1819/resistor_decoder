@@ -3,128 +3,47 @@ import urllib.parse
 
 
 # ============================================================
-# 1. PAGE CONFIGURATION
+# PAGE CONFIG
 # ============================================================
 
 st.set_page_config(
-    page_title="Python Resistor Decoder",
+    page_title="Resistor Color Code Decoder",
     page_icon="Ω",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
 
 
 # ============================================================
-# 2. CUSTOM CSS
+# CSS
 # ============================================================
 
 st.markdown("""
 <style>
 
-/* ---------- Main Application Background ---------- */
-
 .stApp {
     background:
-        radial-gradient(circle at top left, rgba(65, 88, 208, 0.35), transparent 35%),
-        radial-gradient(circle at bottom right, rgba(200, 80, 192, 0.30), transparent 35%),
-        linear-gradient(135deg, #10111f 0%, #171426 45%, #211728 100%);
+        radial-gradient(circle at 10% 10%, rgba(65,88,208,0.25), transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(200,80,192,0.20), transparent 30%),
+        linear-gradient(135deg, #111323 0%, #171426 50%, #25162b 100%);
     background-attachment: fixed;
 }
 
-
-/* ---------- Main Container ---------- */
-
+/* Main width */
 .block-container {
-    max-width: 1400px;
-    padding-top: 2rem;
+    max-width: 1350px;
+    padding-top: 1.5rem;
     padding-bottom: 3rem;
 }
 
-
-/* ---------- Typography ---------- */
-
+/* Text */
 h1, h2, h3, h4, p, label {
-    color: #ffffff !important;
+    color: white !important;
 }
 
-h1 {
-    font-size: 2.7rem !important;
-    font-weight: 800 !important;
-    letter-spacing: -1px;
-}
-
-h2 {
-    font-weight: 750 !important;
-}
-
-h3 {
-    font-weight: 700 !important;
-}
-
-p {
-    color: #d7d7e2 !important;
-}
-
-
-/* ---------- Glass Cards ---------- */
-
-.glass-card {
-    background: rgba(25, 25, 38, 0.88);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.28);
-    margin-bottom: 20px;
-}
-
-
-/* ---------- Header ---------- */
-
-.hero {
-    text-align: center;
-    padding: 20px 10px 10px 10px;
-}
-
-.hero-title {
-    font-size: 2.8rem;
-    font-weight: 850;
-    color: #ffffff;
-    margin-bottom: 8px;
-}
-
-.hero-subtitle {
-    color: #c8c8d8;
-    font-size: 1.05rem;
-    margin-bottom: 5px;
-}
-
-.badge {
-    display: inline-block;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 30px;
-    padding: 7px 15px;
-    font-size: 0.82rem;
-    color: #eeeeff;
-    margin-top: 10px;
-}
-
-
-/* ---------- Section Titles ---------- */
-
-.section-title {
-    color: #ffffff;
-    font-size: 1.15rem;
-    font-weight: 750;
-    margin-bottom: 10px;
-}
-
-
-/* ---------- Select Boxes ---------- */
-
+/* Select boxes */
 div[data-baseweb="select"] > div {
-    background-color: rgba(255, 255, 255, 0.07) !important;
-    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    background-color: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
     border-radius: 10px !important;
 }
 
@@ -132,146 +51,21 @@ div[data-baseweb="select"] span {
     color: white !important;
 }
 
-
-/* ---------- Radio Buttons ---------- */
-
+/* Radio */
 .stRadio label {
-    color: #ffffff !important;
+    color: white !important;
 }
 
-
-/* ---------- Result Card ---------- */
-
-.result-card {
-    background: linear-gradient(
-        135deg,
-        rgba(25, 135, 84, 0.18),
-        rgba(25, 25, 38, 0.95)
-    );
-    border: 1px solid rgba(25, 200, 120, 0.30);
-    border-radius: 18px;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.20);
-}
-
-.result-label {
-    color: #b9c2ca;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.result-value {
-    color: #ffffff;
-    font-size: 2.6rem;
-    font-weight: 850;
-    margin: 8px 0;
-}
-
-.result-tolerance {
-    color: #9fe3bd;
-    font-size: 1.1rem;
-    font-weight: 650;
-}
-
-
-/* ---------- Calculation Card ---------- */
-
-.calculation-card {
-    background: rgba(255, 255, 255, 0.045);
-    border: 1px solid rgba(255,255,255,0.09);
-    border-radius: 15px;
-    padding: 20px;
-    margin-top: 15px;
-}
-
-.calculation-title {
-    color: #ffffff;
-    font-size: 1rem;
-    font-weight: 750;
-    margin-bottom: 10px;
-}
-
-.calculation-text {
-    color: #d8d8e5;
-    font-family: monospace;
-    font-size: 0.95rem;
-    line-height: 1.8;
-}
-
-
-/* ---------- Info Cards ---------- */
-
-.info-card {
-    background: rgba(255,255,255,0.045);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 15px;
-    padding: 18px;
-    height: 100%;
-}
-
-.info-number {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #ffffff;
-}
-
-.info-label {
-    font-size: 0.82rem;
-    color: #aeb0c0;
-}
-
-
-/* ---------- Decorative Resistor ---------- */
-
-.decorative-title {
-    color: #ffffff;
-    font-weight: 750;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-
-/* ---------- Buttons ---------- */
-
+/* Buttons */
 .stButton > button {
     border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.15);
-    font-weight: 700;
     min-height: 44px;
+    font-weight: 700;
 }
 
-
-/* ---------- Divider ---------- */
-
+/* Divider */
 hr {
-    border-color: rgba(255,255,255,0.10) !important;
-}
-
-
-/* ---------- Footer ---------- */
-
-.footer {
-    text-align: center;
-    color: #8f90a0;
-    font-size: 0.82rem;
-    padding: 25px 0 5px 0;
-}
-
-
-/* ---------- Mobile ---------- */
-
-@media (max-width: 900px) {
-
-    .hero-title {
-        font-size: 2.1rem;
-    }
-
-    h1 {
-        font-size: 2.1rem !important;
-    }
-
+    border-color: rgba(255,255,255,0.12) !important;
 }
 
 </style>
@@ -279,7 +73,7 @@ hr {
 
 
 # ============================================================
-# 3. RESISTOR DATA
+# RESISTOR DATA
 # ============================================================
 
 digits = {
@@ -338,146 +132,141 @@ COLOR_HEX = {
 
 
 # ============================================================
-# 4. HELPER FUNCTIONS
+# FUNCTIONS
 # ============================================================
 
 def format_resistance(value):
-    """Convert resistance into a readable engineering format."""
 
     if value >= 1_000_000_000:
         return f"{value / 1_000_000_000:.2f} GΩ"
 
-    elif value >= 1_000_000:
+    if value >= 1_000_000:
         return f"{value / 1_000_000:.2f} MΩ"
 
-    elif value >= 1_000:
+    if value >= 1_000:
         return f"{value / 1_000:.2f} kΩ"
 
-    else:
-        return f"{value:g} Ω"
+    return f"{value:g} Ω"
 
 
-def deco_resistor(c1, c2, c3, c4):
-    """Generate a decorative SVG resistor."""
+def decorative_resistor(c1, c2, c3, c4):
 
     return f"""
-    <div style="text-align:center; margin:25px 0;">
-        <svg width="190" height="70"
-             viewBox="0 0 190 70"
+    <div style="text-align:center; margin:20px 0;">
+
+        <svg width="180" height="65"
+             viewBox="0 0 180 65"
              xmlns="http://www.w3.org/2000/svg">
 
-            <line x1="5" y1="35" x2="35" y2="35"
-                  stroke="#FFFFFF" stroke-width="4"/>
+            <line x1="5" y1="32"
+                  x2="35" y2="32"
+                  stroke="white"
+                  stroke-width="4"/>
 
-            <line x1="155" y1="35" x2="185" y2="35"
-                  stroke="#FFFFFF" stroke-width="4"/>
+            <line x1="145" y1="32"
+                  x2="175" y2="32"
+                  stroke="white"
+                  stroke-width="4"/>
 
-            <rect x="35" y="15"
-                  width="120"
+            <rect x="35" y="12"
+                  width="110"
                   height="40"
                   rx="20"
                   fill="#D2B48C"
-                  stroke="#555"
+                  stroke="#444"
                   stroke-width="2"/>
 
-            <rect x="65" y="15"
+            <rect x="62" y="12"
                   width="7"
                   height="40"
                   fill="{c1}"/>
 
-            <rect x="82" y="15"
+            <rect x="78" y="12"
                   width="7"
                   height="40"
                   fill="{c2}"/>
 
-            <rect x="99" y="15"
+            <rect x="94" y="12"
                   width="7"
                   height="40"
                   fill="{c3}"/>
 
-            <rect x="125" y="15"
+            <rect x="120" y="12"
                   width="7"
                   height="40"
                   fill="{c4}"/>
 
         </svg>
+
     </div>
     """
 
 
-def resistor_svg(bands):
-    """Create the main dynamic resistor graphic."""
+def main_resistor(bands):
 
     svg_bands = ""
 
-    start_x = 130
+    start_x = 145
     spacing = 35
 
     for i, color in enumerate(bands):
 
-        hex_code = COLOR_HEX.get(color, "#D3D3D3")
-
-        x_pos = start_x + (i * spacing)
+        x = start_x + i * spacing
 
         if i == len(bands) - 1 and len(bands) > 3:
-            x_pos += 20
+            x += 20
 
         svg_bands += f"""
         <rect
-            x="{x_pos}"
+            x="{x}"
             y="30"
-            width="13"
+            width="14"
             height="60"
-            fill="{hex_code}"
-            stroke="#222222"
+            fill="{COLOR_HEX[color]}"
+            stroke="#222"
             stroke-width="1.5"
         />
         """
 
     return f"""
-    <div style="text-align:center; margin:25px 0;">
+    <div style="display:flex; justify-content:center;">
 
-        <svg
-            width="460"
-            height="120"
-            viewBox="0 0 460 120"
-            xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg width="500"
+             height="130"
+             viewBox="0 0 500 130"
+             xmlns="http://www.w3.org/2000/svg">
 
-            <!-- Left wire -->
             <line
                 x1="10"
-                y1="60"
-                x2="90"
-                y2="60"
-                stroke="#FFFFFF"
+                y1="65"
+                x2="100"
+                y2="65"
+                stroke="white"
                 stroke-width="7"
             />
 
-            <!-- Right wire -->
             <line
-                x1="350"
-                y1="60"
-                x2="450"
-                y2="60"
-                stroke="#FFFFFF"
+                x1="400"
+                y1="65"
+                x2="490"
+                y2="65"
+                stroke="white"
                 stroke-width="7"
             />
 
-            <!-- Resistor body -->
             <path
                 d="
-                M 90 60
-                Q 100 30 120 30
-                L 320 30
-                Q 340 30 350 60
-                Q 340 90 320 90
-                L 120 90
-                Q 100 90 90 60
+                M100 65
+                Q110 32 135 32
+                L365 32
+                Q390 32 400 65
+                Q390 98 365 98
+                L135 98
+                Q110 98 100 65
                 Z
                 "
                 fill="#D2B48C"
-                stroke="#333333"
+                stroke="#333"
                 stroke-width="3"
             />
 
@@ -489,162 +278,148 @@ def resistor_svg(bands):
     """
 
 
-def reset_app():
-    """Reset all widget values."""
-
-    for key in list(st.session_state.keys()):
-        del st.session_state[key]
-
-    st.rerun()
-
-
 # ============================================================
-# 5. HEADER
+# HERO
 # ============================================================
 
-st.markdown("""
-<div class="hero">
+st.html("""
+<div style="
+    text-align:center;
+    padding:25px 10px 18px 10px;
+">
 
-    <div class="hero-title">
+    <div style="
+        font-size:42px;
+        font-weight:800;
+        color:white;
+        margin-bottom:8px;
+    ">
         Ω Resistor Color Code Decoder
     </div>
 
-    <div class="hero-subtitle">
+    <div style="
+        color:#c9c9d8;
+        font-size:17px;
+        margin-bottom:15px;
+    ">
         Decode resistor values, multipliers and tolerances instantly.
     </div>
 
-    <div class="badge">
+    <span style="
+        display:inline-block;
+        padding:7px 16px;
+        border-radius:20px;
+        background:rgba(255,255,255,0.08);
+        border:1px solid rgba(255,255,255,0.15);
+        color:#eeeeff;
+        font-size:13px;
+    ">
         Python • Streamlit • Electronics
-    </div>
+    </span>
 
 </div>
-""", unsafe_allow_html=True)
+""")
 
 
 # ============================================================
-# 6. MAIN THREE-COLUMN LAYOUT
+# THREE COLUMNS
 # ============================================================
 
-left_col, center_col, right_col = st.columns(
+left, center, right = st.columns(
     [1, 5, 1],
     gap="large"
 )
 
 
 # ============================================================
-# 7. LEFT DECORATIVE COLUMN
+# LEFT
 # ============================================================
 
-with left_col:
+with left:
 
-    st.markdown(
-        '<div class="decorative-title">⚡ Lab Kit</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown("### ⚡ Lab Kit")
 
-    st.markdown(
-        deco_resistor(
+    st.html(
+        decorative_resistor(
             "#FF0000",
             "#FF0000",
             "#8B4513",
             "#FFD700"
-        ),
-        unsafe_allow_html=True
+        )
     )
 
-    st.markdown(
-        deco_resistor(
+    st.html(
+        decorative_resistor(
             "#8B4513",
             "#000000",
             "#FFA500",
             "#C0C0C0"
-        ),
-        unsafe_allow_html=True
+        )
     )
 
-    st.markdown(
-        deco_resistor(
+    st.html(
+        decorative_resistor(
             "#0000FF",
             "#8A2BE2",
             "#008000",
             "#FFD700"
-        ),
-        unsafe_allow_html=True
+        )
     )
 
 
 # ============================================================
-# 8. RIGHT DECORATIVE COLUMN
+# RIGHT
 # ============================================================
 
-with right_col:
+with right:
 
-    st.markdown(
-        '<div class="decorative-title">🎨 Colors</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown("### 🎨 Colors")
 
-    st.markdown(
-        deco_resistor(
+    st.html(
+        decorative_resistor(
             "#0000FF",
             "#FFA500",
             "#8B4513",
             "#FFD700"
-        ),
-        unsafe_allow_html=True
+        )
     )
 
-    st.markdown(
-        deco_resistor(
+    st.html(
+        decorative_resistor(
             "#8A2BE2",
             "#008000",
             "#FF0000",
             "#C0C0C0"
-        ),
-        unsafe_allow_html=True
+        )
     )
 
-    st.markdown(
-        deco_resistor(
+    st.html(
+        decorative_resistor(
             "#FFFF00",
             "#000000",
             "#FF0000",
             "#FFD700"
-        ),
-        unsafe_allow_html=True
+        )
     )
 
 
 # ============================================================
-# 9. CENTER APPLICATION
+# CENTER
 # ============================================================
 
-with center_col:
+with center:
 
-    # --------------------------------------------------------
-    # Band Selection
-    # --------------------------------------------------------
-
-    st.markdown(
-        '<div class="section-title">🔧 Resistor Configuration</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown("### 🔧 Resistor Configuration")
 
     band_count = st.radio(
         "Select Number of Bands",
         [3, 4, 5],
         horizontal=True,
-        format_func=lambda x: f"{x}-Band",
-        key="band_count"
+        format_func=lambda x: f"{x}-Band"
     )
 
-
-    # --------------------------------------------------------
-    # Valid first-band colors
-    # Black is not used as first significant digit.
-    # --------------------------------------------------------
-
-    first_band_colors = [
+    # First band cannot normally be black.
+    first_colors = [
         "Brown",
         "Red",
         "Orange",
@@ -656,134 +431,114 @@ with center_col:
         "White"
     ]
 
-
     # --------------------------------------------------------
-    # Band Inputs
+    # 3 BAND
     # --------------------------------------------------------
 
     if band_count == 3:
 
-        cols = st.columns(3)
+        c1, c2, c3 = st.columns(3)
 
-        with cols[0]:
+        with c1:
             b1 = st.selectbox(
                 "1st Band",
-                first_band_colors,
-                key="b1"
+                first_colors
             )
 
-        with cols[1]:
+        with c2:
             b2 = st.selectbox(
                 "2nd Band",
-                list(digits.keys()),
-                key="b2"
+                list(digits.keys())
             )
 
-        with cols[2]:
+        with c3:
             mult = st.selectbox(
                 "Multiplier",
-                list(multipliers.keys()),
-                key="mult"
+                list(multipliers.keys())
             )
 
         base = digits[b1] * 10 + digits[b2]
 
-        tol_val = 20
+        tolerance = 20
 
-        bands = [
-            b1,
-            b2,
-            mult
-        ]
+        bands = [b1, b2, mult]
 
-        tolerance_name = "None specified (3-band standard: ±20%)"
-
+    # --------------------------------------------------------
+    # 4 BAND
+    # --------------------------------------------------------
 
     elif band_count == 4:
 
-        cols = st.columns(4)
+        c1, c2, c3, c4 = st.columns(4)
 
-        with cols[0]:
+        with c1:
             b1 = st.selectbox(
                 "1st Band",
-                first_band_colors,
-                key="b1"
+                first_colors
             )
 
-        with cols[1]:
+        with c2:
             b2 = st.selectbox(
                 "2nd Band",
-                list(digits.keys()),
-                key="b2"
+                list(digits.keys())
             )
 
-        with cols[2]:
+        with c3:
             mult = st.selectbox(
                 "Multiplier",
-                list(multipliers.keys()),
-                key="mult"
+                list(multipliers.keys())
             )
 
-        with cols[3]:
+        with c4:
             tol = st.selectbox(
                 "Tolerance",
                 list(tolerances.keys()),
-                index=list(tolerances.keys()).index("Gold"),
-                key="tol"
+                index=list(tolerances.keys()).index("Gold")
             )
 
         base = digits[b1] * 10 + digits[b2]
 
-        tol_val = tolerances[tol]
+        tolerance = tolerances[tol]
 
-        bands = [
-            b1,
-            b2,
-            mult,
-            tol
-        ]
+        bands = [b1, b2, mult, tol]
 
-        tolerance_name = tol
-
+    # --------------------------------------------------------
+    # 5 BAND
+    # --------------------------------------------------------
 
     else:
 
-        cols = st.columns(5)
+        c1, c2, c3, c4, c5 = st.columns(5)
 
-        with cols[0]:
+        with c1:
             b1 = st.selectbox(
                 "1st Band",
-                first_band_colors,
-                key="b1"
+                first_colors
             )
 
-        with cols[1]:
+        with c2:
             b2 = st.selectbox(
                 "2nd Band",
-                list(digits.keys()),
-                key="b2"
+                list(digits.keys())
             )
 
-        with cols[2]:
+        with c3:
             b3 = st.selectbox(
                 "3rd Band",
-                list(digits.keys()),
-                key="b3"
+                list(digits.keys())
             )
 
-        with cols[3]:
+        with c4:
             mult = st.selectbox(
                 "Multiplier",
-                list(multipliers.keys()),
-                key="mult"
+                list(multipliers.keys())
             )
 
-        with cols[4]:
+        with c5:
             tol = st.selectbox(
                 "Tolerance",
                 list(tolerances.keys()),
-                index=list(tolerances.keys()).index("Gold"),
-                key="tol"
+                index=list(tolerances.keys()).index("Gold")
             )
 
         base = (
@@ -792,234 +547,173 @@ with center_col:
             + digits[b3]
         )
 
-        tol_val = tolerances[tol]
+        tolerance = tolerances[tol]
 
-        bands = [
-            b1,
-            b2,
-            b3,
-            mult,
-            tol
-        ]
-
-        tolerance_name = tol
+        bands = [b1, b2, b3, mult, tol]
 
 
-    # --------------------------------------------------------
-    # Calculate Resistance
-    # --------------------------------------------------------
+    # ========================================================
+    # CALCULATION
+    # ========================================================
 
     multiplier_value = multipliers[mult]
 
-    final_res = base * multiplier_value
+    resistance = base * multiplier_value
+
+    minimum = resistance * (1 - tolerance / 100)
+
+    maximum = resistance * (1 + tolerance / 100)
 
 
     # ========================================================
-    # 10. DYNAMIC RESISTOR
+    # RESISTOR
     # ========================================================
+
+    st.html(main_resistor(bands))
+
+
+    # ========================================================
+    # RESULT
+    # ========================================================
+
+    st.markdown("---")
 
     st.markdown(
-        resistor_svg(bands),
+        f"""
+        <div style="
+            background:rgba(25,135,84,0.15);
+            border:1px solid rgba(25,200,120,0.30);
+            border-radius:16px;
+            padding:25px;
+            text-align:center;
+        ">
+
+            <div style="
+                color:#aeb7b2;
+                font-size:13px;
+                letter-spacing:2px;
+                text-transform:uppercase;
+            ">
+                Calculated Resistance
+            </div>
+
+            <div style="
+                color:white;
+                font-size:42px;
+                font-weight:800;
+                margin:8px;
+            ">
+                {format_resistance(resistance)}
+            </div>
+
+            <div style="
+                color:#9fe3bd;
+                font-size:18px;
+                font-weight:600;
+            ">
+                ±{tolerance:g}%
+            </div>
+
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
 
     # ========================================================
-    # 11. RESULT
+    # CALCULATION BREAKDOWN
     # ========================================================
 
-    formatted_resistance = format_resistance(final_res)
+    st.markdown("### 🧮 Calculation Breakdown")
 
-    minimum_resistance = final_res * (1 - tol_val / 100)
-
-    maximum_resistance = final_res * (1 + tol_val / 100)
-
-
-    st.markdown(f"""
-    <div class="result-card">
-
-        <div class="result-label">
-            Calculated Resistance
-        </div>
-
-        <div class="result-value">
-            {formatted_resistance}
-        </div>
-
-        <div class="result-tolerance">
-            ±{tol_val:g}%
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
+    st.code(
+        f"""Significant digits : {base}
+Multiplier          : × {multiplier_value:g}
+Resistance          : {base} × {multiplier_value:g}
+                    = {resistance:g} Ω
+Tolerance           : ±{tolerance:g}%""",
+        language="text"
+    )
 
 
     # ========================================================
-    # 12. CALCULATION BREAKDOWN
-    # ========================================================
-
-    st.markdown(f"""
-    <div class="calculation-card">
-
-        <div class="calculation-title">
-            🧮 Calculation Breakdown
-        </div>
-
-        <div class="calculation-text">
-
-            Significant digits:
-            <b>{base}</b>
-            <br>
-
-            Multiplier:
-            <b>× {multiplier_value:g}</b>
-            <br>
-
-            Resistance:
-            <b>{base} × {multiplier_value:g}
-            = {final_res:g} Ω</b>
-            <br>
-
-            Tolerance:
-            <b>±{tol_val:g}%</b>
-
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-
-    # ========================================================
-    # 13. RESISTANCE RANGE
+    # RANGE
     # ========================================================
 
     st.markdown("### 📏 Resistance Range")
 
-    range_cols = st.columns(3)
+    r1, r2, r3 = st.columns(3)
 
-    with range_cols[0]:
+    with r1:
+        st.metric(
+            "Nominal",
+            format_resistance(resistance)
+        )
 
-        st.markdown(f"""
-        <div class="info-card">
+    with r2:
+        st.metric(
+            "Minimum",
+            format_resistance(minimum)
+        )
 
-            <div class="info-label">
-                NOMINAL
-            </div>
-
-            <div class="info-number">
-                {formatted_resistance}
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-
-    with range_cols[1]:
-
-        st.markdown(f"""
-        <div class="info-card">
-
-            <div class="info-label">
-                MINIMUM
-            </div>
-
-            <div class="info-number">
-                {format_resistance(minimum_resistance)}
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-
-    with range_cols[2]:
-
-        st.markdown(f"""
-        <div class="info-card">
-
-            <div class="info-label">
-                MAXIMUM
-            </div>
-
-            <div class="info-number">
-                {format_resistance(maximum_resistance)}
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
+    with r3:
+        st.metric(
+            "Maximum",
+            format_resistance(maximum)
+        )
 
 
     # ========================================================
-    # 14. RESET + WHATSAPP
+    # ACTIONS
     # ========================================================
 
-    st.markdown("### 🔄 Actions")
+    st.markdown("### 🔗 Share")
 
-    action_cols = st.columns(2)
+    app_url = "https://resistor-color-code-decoder.streamlit.app"
 
-    with action_cols[0]:
+    message = (
+        "Check out my Python Resistor Color Code Decoder: "
+        + app_url
+    )
 
-        if st.button(
-            "↻ Reset Decoder",
-            use_container_width=True
-        ):
-            reset_app()
+    whatsapp_url = (
+        "https://api.whatsapp.com/send?text="
+        + urllib.parse.quote(message)
+    )
 
+    st.markdown(
+        f"""
+        <a href="{whatsapp_url}"
+           target="_blank"
+           style="text-decoration:none;">
 
-    with action_cols[1]:
+            <div style="
+                background:#25D366;
+                color:white;
+                text-align:center;
+                padding:12px;
+                border-radius:10px;
+                font-weight:700;
+                font-size:16px;
+            ">
+                💬 Share on WhatsApp
+            </div>
 
-        app_url = (
-            "https://resistor-color-code-decoder.streamlit.app"
-        )
-
-        msg = (
-            "Check out my Python Resistor Color Code Decoder app: "
-            + app_url
-        )
-
-        whatsapp_link = (
-            "https://api.whatsapp.com/send?text="
-            + urllib.parse.quote(msg)
-        )
-
-        st.markdown(
-            f"""
-            <a href="{whatsapp_link}" target="_blank"
-               style="text-decoration:none;">
-
-                <div style="
-                    background:#25D366;
-                    color:white;
-                    padding:11px;
-                    border-radius:10px;
-                    text-align:center;
-                    font-weight:700;
-                    font-size:16px;
-                    margin-top:0px;
-                ">
-
-                    💬 Share on WhatsApp
-
-                </div>
-
-            </a>
-            """,
-            unsafe_allow_html=True
-        )
+        </a>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
-# 15. COLOR REFERENCE
+# COLOR REFERENCE
 # ============================================================
 
 st.markdown("---")
 
-st.markdown(
-    '<div class="section-title">📚 Resistor Color Reference</div>',
-    unsafe_allow_html=True
-)
+st.markdown("### 📚 Resistor Color Reference")
 
-
-reference_data = [
+reference = [
     ("Black", "0", "×10⁰", "—"),
     ("Brown", "1", "×10¹", "±1%"),
     ("Red", "2", "×10²", "±2%"),
@@ -1034,43 +728,34 @@ reference_data = [
     ("Silver", "—", "×10⁻²", "±10%")
 ]
 
-
 cols = st.columns(4)
 
-headers = [
-    "Color",
-    "Digit",
-    "Multiplier",
-    "Tolerance"
-]
+for col, title in zip(
+    cols,
+    ["Color", "Digit", "Multiplier", "Tolerance"]
+):
+    col.markdown(f"**{title}**")
 
-for i, header in enumerate(headers):
+for color, digit, multiplier, tolerance in reference:
 
-    with cols[i]:
-        st.markdown(
-            f"**{header}**"
-        )
+    c1, c2, c3, c4 = st.columns(4)
 
+    text_color = (
+        "#111111"
+        if color in ["White", "Yellow", "Gold", "Silver"]
+        else "#FFFFFF"
+    )
 
-for color, digit, multiplier, tolerance in reference_data:
-
-    cols = st.columns(4)
-
-    with cols[0]:
-        hex_color = COLOR_HEX[color]
-
-        # Choose readable text for dark/light colors
-        text_color = "#000000" if color in ["White", "Yellow", "Gold", "Silver"] else "#FFFFFF"
-
+    with c1:
         st.markdown(
             f"""
             <div style="
-                background:{hex_color};
+                background:{COLOR_HEX[color]};
                 color:{text_color};
-                padding:7px 12px;
+                padding:7px;
                 border-radius:7px;
-                font-weight:700;
                 text-align:center;
+                font-weight:700;
                 margin-bottom:5px;
             ">
                 {color}
@@ -1079,76 +764,70 @@ for color, digit, multiplier, tolerance in reference_data:
             unsafe_allow_html=True
         )
 
-    with cols[1]:
+    with c2:
         st.write(digit)
 
-    with cols[2]:
+    with c3:
         st.write(multiplier)
 
-    with cols[3]:
+    with c4:
         st.write(tolerance)
 
 
 # ============================================================
-# 16. ABOUT PROJECT
+# ABOUT
 # ============================================================
 
 st.markdown("---")
 
-about_col1, about_col2 = st.columns(2)
+a1, a2 = st.columns(2)
 
-with about_col1:
-
-    st.markdown("""
-    <div class="glass-card">
-
-        <h3>💡 About This Tool</h3>
-
-        <p>
-        This Python-based application decodes standard resistor
-        color bands and calculates the corresponding resistance,
-        multiplier and tolerance.
-        </p>
-
-        <p>
-        It supports 3-band, 4-band and 5-band resistor configurations
-        with a dynamic visual resistor representation.
-        </p>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-
-with about_col2:
+with a1:
 
     st.markdown("""
-    <div class="glass-card">
+    ### 💡 About This Project
 
-        <h3>🛠 Technologies Used</h3>
+    A Python-based resistor color code decoder that supports
+    **3-band, 4-band and 5-band resistors**.
 
-        <p>
-        <b>Python</b><br>
-        <b>Streamlit</b><br>
-        Python Dictionaries<br>
-        Conditional Logic<br>
-        SVG Visualization<br>
-        Responsive Web UI
-        </p>
+    It calculates the nominal resistance, tolerance and
+    acceptable resistance range while providing a dynamic
+    visual representation of the resistor.
+    """)
 
-    </div>
-    """, unsafe_allow_html=True)
+
+with a2:
+
+    st.markdown("""
+    ### 🛠 Technologies
+
+    **Python**  
+    **Streamlit**  
+    Python Dictionaries  
+    Conditional Logic  
+    SVG Visualization  
+    Responsive Web Interface
+    """)
 
 
 # ============================================================
-# 17. FOOTER
+# FOOTER
 # ============================================================
 
-st.markdown("""
-<div class="footer">
+st.markdown("---")
 
-    Ω Resistor Color Code Decoder
-    <br>
-    Built with Python & Streamlit • Electronics Utility
-
-</div>
-""", unsafe_allow_html=True)
+st.markdown(
+    """
+    <div style="
+        text-align:center;
+        color:#88899a;
+        padding:15px;
+        font-size:13px;
+    ">
+        Ω Resistor Color Code Decoder
+        <br>
+        Built with Python & Streamlit
+    </div>
+    """,
+    unsafe_allow_html=True
+)
