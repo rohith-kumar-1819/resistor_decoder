@@ -3,7 +3,7 @@ import urllib.parse
 
 
 # ============================================================
-# PAGE CONFIGURATION
+# PAGE CONFIGURATION & STYLING
 # ============================================================
 
 st.set_page_config(
@@ -11,6 +11,37 @@ st.set_page_config(
     page_icon="Ω",
     layout="wide"
 )
+
+# Custom Colorful Theme & Glassmorphic Styling
+st.markdown("""
+    <style>
+    .stApp {
+        background: linear-gradient(135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+        background-attachment: fixed;
+    }
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+    }
+    .block-container {
+        background: rgba(18, 18, 28, 0.85);
+        border-radius: 20px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        margin-top: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    h1, h2, h3, h4, p, label, .stRadio label {
+        color: #ffffff !important;
+        text-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+    }
+    .stSelectbox div[data-baseweb="select"] {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 
 # ============================================================
@@ -132,7 +163,7 @@ left_col, main_col, right_col = st.columns(
 
 
 # ============================================================
-# LEFT SIDE
+# LEFT SIDE (Lab Kit)
 # ============================================================
 
 with left_col:
@@ -148,7 +179,7 @@ with left_col:
 
 
 # ============================================================
-# RIGHT SIDE
+# RIGHT SIDE (Colors)
 # ============================================================
 
 with right_col:
