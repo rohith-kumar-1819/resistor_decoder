@@ -29,17 +29,30 @@ def format_resistance(value):
     elif value >= 1000: return f"{value / 1000:.2f} kΩ"
     else: return f"{value:g} Ω"
 
-# 3. Web UI Setup (Wide layout to support left & right decorative columns)
+# 3. Web UI Setup (Wide layout with a vibrant colorful background)
 st.set_page_config(page_title="Python Resistor Decoder", page_icon="Ω", layout="wide")
+
+st.markdown("""
+    <style>
+    .stApp {
+        background: linear-gradient(135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+        background-attachment: fixed;
+    }
+    h1, h2, h3, p, label, .stRadio div, .stMarkdown {
+        color: #FFFFFF !important;
+        text-shadow: 0px 1px 3px rgba(0,0,0,0.3);
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # Helper function to generate decorative side resistors
 def deco_resistor(c1, c2, c3, c4):
     return f"""
     <div style="text-align: center; margin-bottom: 25px;">
         <svg width="130" height="50" viewBox="0 0 130 50">
-            <line x1="5" y1="25" x2="35" y2="25" stroke="#888" stroke-width="4"/>
-            <line x1="95" y1="25" x2="125" y2="25" stroke="#888" stroke-width="4"/>
-            <path d="M 35 25 Q 40 10 55 10 L 75 10 Q 90 10 95 25 Q 90 40 75 40 L 55 40 Q 40 40 35 25 Z" fill="#D2B48C" stroke="#654321" stroke-width="2"/>
+            <line x1="5" y1="25" x2="35" y2="25" stroke="#FFF" stroke-width="4"/>
+            <line x1="95" y1="25" x2="125" y2="25" stroke="#FFF" stroke-width="4"/>
+            <path d="M 35 25 Q 40 10 55 10 L 75 10 Q 90 10 95 25 Q 90 40 75 40 L 55 40 Q 40 40 35 25 Z" fill="#D2B48C" stroke="#333" stroke-width="2"/>
             <rect x="52" y="12" width="5" height="26" fill="{c1}"/>
             <rect x="62" y="12" width="5" height="26" fill="{c2}"/>
             <rect x="72" y="12" width="5" height="26" fill="{c3}"/>
@@ -54,7 +67,7 @@ left_col, center_col, right_col = st.columns([1, 4, 1])
 # --- LEFT DECORATIVE COLUMN ---
 with left_col:
     st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #888; font-weight: bold;'>⚡ Lab Kit</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-weight: bold;'>⚡ Lab Kit</p>", unsafe_allow_html=True)
     st.markdown(deco_resistor("#FF0000", "#FF0000", "#8B4513", "#FFD700"), unsafe_allow_html=True)
     st.markdown(deco_resistor("#8B4513", "#000000", "#FFA500", "#C0C0C0"), unsafe_allow_html=True)
     st.markdown(deco_resistor("#0000FF", "#8A2BE2", "#008000", "#FFD700"), unsafe_allow_html=True)
@@ -108,9 +121,9 @@ with center_col:
     resistor_svg = f"""
     <div style="text-align: center; margin: 20px 0;">
         <svg width="400" height="120" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
-            <line x1="10" y1="60" x2="80" y2="60" stroke="#CCCCCC" stroke-width="8"/>
-            <line x1="320" y1="60" x2="390" y2="60" stroke="#CCCCCC" stroke-width="8"/>
-            <path d="M 80 60 Q 90 30 110 30 L 290 30 Q 310 30 320 60 Q 310 90 290 90 L 110 90 Q 90 90 80 60 Z" fill="#D2B48C" stroke="#8B5A2B" stroke-width="3"/>
+            <line x1="10" y1="60" x2="80" y2="60" stroke="#FFFFFF" stroke-width="8"/>
+            <line x1="320" y1="60" x2="390" y2="60" stroke="#FFFFFF" stroke-width="8"/>
+            <path d="M 80 60 Q 90 30 110 30 L 290 30 Q 310 30 320 60 Q 310 90 290 90 L 110 90 Q 90 90 80 60 Z" fill="#D2B48C" stroke="#333333" stroke-width="3"/>
             {svg_bands}
         </svg>
     </div>
@@ -143,7 +156,7 @@ with center_col:
 # --- RIGHT DECORATIVE COLUMN ---
 with right_col:
     st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #888; font-weight: bold;'>🎨 Colors</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-weight: bold;'>🎨 Colors</p>", unsafe_allow_html=True)
     st.markdown(deco_resistor("#0000FF", "#FFA500", "#8B4513", "#FFD700"), unsafe_allow_html=True)
     st.markdown(deco_resistor("#8A2BE2", "#008000", "#FF0000", "#C0C0C0"), unsafe_allow_html=True)
     st.markdown(deco_resistor("#FFFF00", "#000000", "#FF0000", "#FFD700"), unsafe_allow_html=True)
