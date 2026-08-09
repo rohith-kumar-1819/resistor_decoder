@@ -1,9 +1,10 @@
 import streamlit as st
+import matplotlib.pyplot as plt
 import urllib.parse
 
 
 # ============================================================
-# PAGE CONFIG
+# PAGE CONFIGURATION
 # ============================================================
 
 st.set_page_config(
@@ -11,65 +12,6 @@ st.set_page_config(
     page_icon="Ω",
     layout="wide"
 )
-
-
-# ============================================================
-# CSS
-# ============================================================
-
-st.markdown("""
-<style>
-
-.stApp {
-    background:
-        radial-gradient(circle at 10% 10%, rgba(65,88,208,0.25), transparent 30%),
-        radial-gradient(circle at 90% 80%, rgba(200,80,192,0.20), transparent 30%),
-        linear-gradient(135deg, #111323 0%, #171426 50%, #25162b 100%);
-    background-attachment: fixed;
-}
-
-/* Main width */
-.block-container {
-    max-width: 1350px;
-    padding-top: 1.5rem;
-    padding-bottom: 3rem;
-}
-
-/* Text */
-h1, h2, h3, h4, p, label {
-    color: white !important;
-}
-
-/* Select boxes */
-div[data-baseweb="select"] > div {
-    background-color: rgba(255,255,255,0.08) !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
-    border-radius: 10px !important;
-}
-
-div[data-baseweb="select"] span {
-    color: white !important;
-}
-
-/* Radio */
-.stRadio label {
-    color: white !important;
-}
-
-/* Buttons */
-.stButton > button {
-    border-radius: 10px;
-    min-height: 44px;
-    font-weight: 700;
-}
-
-/* Divider */
-hr {
-    border-color: rgba(255,255,255,0.12) !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
 
 
 # ============================================================
@@ -115,19 +57,22 @@ tolerances = {
     "Silver": 10
 }
 
-COLOR_HEX = {
-    "Black": "#000000",
-    "Brown": "#8B4513",
-    "Red": "#FF0000",
-    "Orange": "#FFA500",
-    "Yellow": "#FFD700",
-    "Green": "#008000",
-    "Blue": "#0000FF",
-    "Violet": "#8A2BE2",
-    "Gray": "#808080",
-    "White": "#FFFFFF",
-    "Gold": "#FFD700",
-    "Silver": "#C0C0C0"
+
+# Matplotlib color names
+
+color_map = {
+    "Black": "black",
+    "Brown": "brown",
+    "Red": "red",
+    "Orange": "orange",
+    "Yellow": "yellow",
+    "Green": "green",
+    "Blue": "blue",
+    "Violet": "violet",
+    "Gray": "gray",
+    "White": "white",
+    "Gold": "gold",
+    "Silver": "silver"
 }
 
 
@@ -140,276 +85,137 @@ def format_resistance(value):
     if value >= 1_000_000_000:
         return f"{value / 1_000_000_000:.2f} GΩ"
 
-    if value >= 1_000_000:
+    elif value >= 1_000_000:
         return f"{value / 1_000_000:.2f} MΩ"
 
-    if value >= 1_000:
+    elif value >= 1_000:
         return f"{value / 1_000:.2f} kΩ"
 
-    return f"{value:g} Ω"
+    else:
+        return f"{value:g} Ω"
 
 
-def decorative_resistor(c1, c2, c3, c4):
-
-    return f"""
-    <div style="text-align:center; margin:20px 0;">
-
-        <svg width="180" height="65"
-             viewBox="0 0 180 65"
-             xmlns="http://www.w3.org/2000/svg">
-
-            <line x1="5" y1="32"
-                  x2="35" y2="32"
-                  stroke="white"
-                  stroke-width="4"/>
-
-            <line x1="145" y1="32"
-                  x2="175" y2="32"
-                  stroke="white"
-                  stroke-width="4"/>
-
-            <rect x="35" y="12"
-                  width="110"
-                  height="40"
-                  rx="20"
-                  fill="#D2B48C"
-                  stroke="#444"
-                  stroke-width="2"/>
-
-            <rect x="62" y="12"
-                  width="7"
-                  height="40"
-                  fill="{c1}"/>
-
-            <rect x="78" y="12"
-                  width="7"
-                  height="40"
-                  fill="{c2}"/>
-
-            <rect x="94" y="12"
-                  width="7"
-                  height="40"
-                  fill="{c3}"/>
-
-            <rect x="120" y="12"
-                  width="7"
-                  height="40"
-                  fill="{c4}"/>
-
-        </svg>
-
-    </div>
+def draw_resistor(bands):
+    """
+    Draw resistor using Matplotlib.
+    No HTML/SVG is used.
     """
 
+    fig, ax = plt.subplots(figsize=(8, 2))
 
-def main_resistor(bands):
+    # Resistor body
+    body = plt.Rectangle(
+        (2, 0.3),
+        6,
+        1.4,
+        facecolor="#D2B48C",
+        edgecolor="black",
+        linewidth=2
+    )
 
-    svg_bands = ""
+    ax.add_patch(body)
 
-    start_x = 145
-    spacing = 35
+    # Left wire
+    ax.plot(
+        [0, 2],
+        [1, 1],
+        color="black",
+        linewidth=5
+    )
 
-    for i, color in enumerate(bands):
+    # Right wire
+    ax.plot(
+        [8, 10],
+        [1, 1],
+        color="black",
+        linewidth=5
+    )
 
-        x = start_x + i * spacing
+    # Draw bands
+    band_positions = []
 
-        if i == len(bands) - 1 and len(bands) > 3:
-            x += 20
+    if len(bands) == 3:
+        band_positions = [3.0, 4.0, 5.0]
 
-        svg_bands += f"""
-        <rect
-            x="{x}"
-            y="30"
-            width="14"
-            height="60"
-            fill="{COLOR_HEX[color]}"
-            stroke="#222"
-            stroke-width="1.5"
-        />
-        """
+    elif len(bands) == 4:
+        band_positions = [3.0, 4.0, 5.0, 6.2]
 
-    return f"""
-    <div style="display:flex; justify-content:center;">
+    elif len(bands) == 5:
+        band_positions = [2.8, 3.7, 4.6, 5.5, 6.7]
 
-        <svg width="500"
-             height="130"
-             viewBox="0 0 500 130"
-             xmlns="http://www.w3.org/2000/svg">
+    for position, band in zip(band_positions, bands):
 
-            <line
-                x1="10"
-                y1="65"
-                x2="100"
-                y2="65"
-                stroke="white"
-                stroke-width="7"
-            />
+        rect = plt.Rectangle(
+            (position, 0.3),
+            0.22,
+            1.4,
+            facecolor=color_map[band],
+            edgecolor="black",
+            linewidth=0.8
+        )
 
-            <line
-                x1="400"
-                y1="65"
-                x2="490"
-                y2="65"
-                stroke="white"
-                stroke-width="7"
-            />
+        ax.add_patch(rect)
 
-            <path
-                d="
-                M100 65
-                Q110 32 135 32
-                L365 32
-                Q390 32 400 65
-                Q390 98 365 98
-                L135 98
-                Q110 98 100 65
-                Z
-                "
-                fill="#D2B48C"
-                stroke="#333"
-                stroke-width="3"
-            />
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 2)
+    ax.axis("off")
 
-            {svg_bands}
+    st.pyplot(fig, use_container_width=True)
 
-        </svg>
+    plt.close(fig)
 
-    </div>
-    """
+
+def reset():
+    st.session_state.clear()
+    st.rerun()
 
 
 # ============================================================
-# HERO
+# TITLE
 # ============================================================
 
-st.html("""
-<div style="
-    text-align:center;
-    padding:25px 10px 18px 10px;
-">
+st.title("Ω Resistor Color Code Decoder")
 
-    <div style="
-        font-size:42px;
-        font-weight:800;
-        color:white;
-        margin-bottom:8px;
-    ">
-        Ω Resistor Color Code Decoder
-    </div>
-
-    <div style="
-        color:#c9c9d8;
-        font-size:17px;
-        margin-bottom:15px;
-    ">
-        Decode resistor values, multipliers and tolerances instantly.
-    </div>
-
-    <span style="
-        display:inline-block;
-        padding:7px 16px;
-        border-radius:20px;
-        background:rgba(255,255,255,0.08);
-        border:1px solid rgba(255,255,255,0.15);
-        color:#eeeeff;
-        font-size:13px;
-    ">
-        Python • Streamlit • Electronics
-    </span>
-
-</div>
-""")
-
-
-# ============================================================
-# THREE COLUMNS
-# ============================================================
-
-left, center, right = st.columns(
-    [1, 5, 1],
-    gap="large"
+st.write(
+    "A Python-based resistor calculator using "
+    "dictionaries, conditional logic and Streamlit."
 )
 
+st.divider()
+
 
 # ============================================================
-# LEFT
+# MAIN LAYOUT
+# ============================================================
+
+left, center, right = st.columns([1, 5, 1])
+
+
+# ============================================================
+# LEFT PANEL
 # ============================================================
 
 with left:
 
-    st.markdown("### ⚡ Lab Kit")
+    st.subheader("⚡ Lab Kit")
 
-    st.html(
-        decorative_resistor(
-            "#FF0000",
-            "#FF0000",
-            "#8B4513",
-            "#FFD700"
-        )
-    )
-
-    st.html(
-        decorative_resistor(
-            "#8B4513",
-            "#000000",
-            "#FFA500",
-            "#C0C0C0"
-        )
-    )
-
-    st.html(
-        decorative_resistor(
-            "#0000FF",
-            "#8A2BE2",
-            "#008000",
-            "#FFD700"
-        )
-    )
+    st.write("🔴 🟡 🟤")
+    st.write("🟤 ⚫ 🟠")
+    st.write("🔵 🟣 🟢")
+    st.write("🟠 🟡 🔴")
 
 
 # ============================================================
-# RIGHT
-# ============================================================
-
-with right:
-
-    st.markdown("### 🎨 Colors")
-
-    st.html(
-        decorative_resistor(
-            "#0000FF",
-            "#FFA500",
-            "#8B4513",
-            "#FFD700"
-        )
-    )
-
-    st.html(
-        decorative_resistor(
-            "#8A2BE2",
-            "#008000",
-            "#FF0000",
-            "#C0C0C0"
-        )
-    )
-
-    st.html(
-        decorative_resistor(
-            "#FFFF00",
-            "#000000",
-            "#FF0000",
-            "#FFD700"
-        )
-    )
-
-
-# ============================================================
-# CENTER
+# CENTER PANEL
 # ============================================================
 
 with center:
 
-    st.markdown("### 🔧 Resistor Configuration")
+    st.header("🔧 Resistor Configuration")
+
+    # --------------------------------------------------------
+    # BAND COUNT
+    # --------------------------------------------------------
 
     band_count = st.radio(
         "Select Number of Bands",
@@ -418,8 +224,16 @@ with center:
         format_func=lambda x: f"{x}-Band"
     )
 
-    # First band cannot normally be black.
-    first_colors = [
+    st.divider()
+
+
+    # --------------------------------------------------------
+    # FIRST BAND
+    # --------------------------------------------------------
+
+    # Black cannot normally be the first significant digit.
+
+    first_band_colors = [
         "Brown",
         "Red",
         "Orange",
@@ -431,111 +245,141 @@ with center:
         "White"
     ]
 
-    # --------------------------------------------------------
-    # 3 BAND
-    # --------------------------------------------------------
+
+    # ========================================================
+    # 3-BAND RESISTOR
+    # ========================================================
 
     if band_count == 3:
 
-        c1, c2, c3 = st.columns(3)
+        col1, col2, col3 = st.columns(3)
 
-        with c1:
+        with col1:
+
             b1 = st.selectbox(
                 "1st Band",
-                first_colors
+                first_band_colors
             )
 
-        with c2:
+        with col2:
+
             b2 = st.selectbox(
                 "2nd Band",
                 list(digits.keys())
             )
 
-        with c3:
-            mult = st.selectbox(
+        with col3:
+
+            multiplier = st.selectbox(
                 "Multiplier",
                 list(multipliers.keys())
             )
 
-        base = digits[b1] * 10 + digits[b2]
+        base = (
+            digits[b1] * 10
+            + digits[b2]
+        )
 
         tolerance = 20
 
-        bands = [b1, b2, mult]
+        bands = [
+            b1,
+            b2,
+            multiplier
+        ]
 
-    # --------------------------------------------------------
-    # 4 BAND
-    # --------------------------------------------------------
+
+    # ========================================================
+    # 4-BAND RESISTOR
+    # ========================================================
 
     elif band_count == 4:
 
-        c1, c2, c3, c4 = st.columns(4)
+        col1, col2, col3, col4 = st.columns(4)
 
-        with c1:
+        with col1:
+
             b1 = st.selectbox(
                 "1st Band",
-                first_colors
+                first_band_colors
             )
 
-        with c2:
+        with col2:
+
             b2 = st.selectbox(
                 "2nd Band",
                 list(digits.keys())
             )
 
-        with c3:
-            mult = st.selectbox(
+        with col3:
+
+            multiplier = st.selectbox(
                 "Multiplier",
                 list(multipliers.keys())
             )
 
-        with c4:
-            tol = st.selectbox(
+        with col4:
+
+            tolerance_band = st.selectbox(
                 "Tolerance",
                 list(tolerances.keys()),
                 index=list(tolerances.keys()).index("Gold")
             )
 
-        base = digits[b1] * 10 + digits[b2]
+        base = (
+            digits[b1] * 10
+            + digits[b2]
+        )
 
-        tolerance = tolerances[tol]
+        tolerance = tolerances[tolerance_band]
 
-        bands = [b1, b2, mult, tol]
+        bands = [
+            b1,
+            b2,
+            multiplier,
+            tolerance_band
+        ]
 
-    # --------------------------------------------------------
-    # 5 BAND
-    # --------------------------------------------------------
+
+    # ========================================================
+    # 5-BAND RESISTOR
+    # ========================================================
 
     else:
 
-        c1, c2, c3, c4, c5 = st.columns(5)
+        col1, col2, col3, col4, col5 = st.columns(5)
 
-        with c1:
+        with col1:
+
             b1 = st.selectbox(
                 "1st Band",
-                first_colors
+                first_band_colors
             )
 
-        with c2:
+        with col2:
+
             b2 = st.selectbox(
                 "2nd Band",
                 list(digits.keys())
             )
 
-        with c3:
+        with col3:
+
             b3 = st.selectbox(
                 "3rd Band",
                 list(digits.keys())
             )
 
-        with c4:
-            mult = st.selectbox(
+        with col4:
+
+            multiplier = st.selectbox(
                 "Multiplier",
                 list(multipliers.keys())
             )
 
-        with c5:
-            tol = st.selectbox(
+        with col5:
+
+            tolerance_band = st.selectbox(
                 "Tolerance",
                 list(tolerances.keys()),
                 index=list(tolerances.keys()).index("Gold")
@@ -547,16 +391,22 @@ with center:
             + digits[b3]
         )
 
-        tolerance = tolerances[tol]
+        tolerance = tolerances[tolerance_band]
 
-        bands = [b1, b2, b3, mult, tol]
+        bands = [
+            b1,
+            b2,
+            b3,
+            multiplier,
+            tolerance_band
+        ]
 
 
     # ========================================================
-    # CALCULATION
+    # CALCULATE
     # ========================================================
 
-    multiplier_value = multipliers[mult]
+    multiplier_value = multipliers[multiplier]
 
     resistance = base * multiplier_value
 
@@ -566,72 +416,53 @@ with center:
 
 
     # ========================================================
-    # RESISTOR
+    # RESISTOR VISUALIZATION
     # ========================================================
 
-    st.html(main_resistor(bands))
+    st.subheader("🎨 Resistor Preview")
+
+    draw_resistor(bands)
 
 
     # ========================================================
     # RESULT
     # ========================================================
 
-    st.markdown("---")
+    st.subheader("📊 Result")
 
-    st.markdown(
-        f"""
-        <div style="
-            background:rgba(25,135,84,0.15);
-            border:1px solid rgba(25,200,120,0.30);
-            border-radius:16px;
-            padding:25px;
-            text-align:center;
-        ">
+    result_col1, result_col2 = st.columns(2)
 
-            <div style="
-                color:#aeb7b2;
-                font-size:13px;
-                letter-spacing:2px;
-                text-transform:uppercase;
-            ">
-                Calculated Resistance
-            </div>
+    with result_col1:
 
-            <div style="
-                color:white;
-                font-size:42px;
-                font-weight:800;
-                margin:8px;
-            ">
-                {format_resistance(resistance)}
-            </div>
+        st.metric(
+            "Resistance",
+            format_resistance(resistance)
+        )
 
-            <div style="
-                color:#9fe3bd;
-                font-size:18px;
-                font-weight:600;
-            ">
-                ±{tolerance:g}%
-            </div>
+    with result_col2:
 
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+        st.metric(
+            "Tolerance",
+            f"±{tolerance:g}%"
+        )
 
 
     # ========================================================
-    # CALCULATION BREAKDOWN
+    # CALCULATION
     # ========================================================
 
-    st.markdown("### 🧮 Calculation Breakdown")
+    st.subheader("🧮 Calculation")
 
     st.code(
-        f"""Significant digits : {base}
-Multiplier          : × {multiplier_value:g}
-Resistance          : {base} × {multiplier_value:g}
-                    = {resistance:g} Ω
-Tolerance           : ±{tolerance:g}%""",
+        f"""Significant digits = {base}
+Multiplier = {multiplier_value:g}
+
+Resistance =
+{base} × {multiplier_value:g}
+
+= {resistance:g} Ω
+
+Tolerance = ±{tolerance:g}%""",
         language="text"
     )
 
@@ -640,23 +471,26 @@ Tolerance           : ±{tolerance:g}%""",
     # RANGE
     # ========================================================
 
-    st.markdown("### 📏 Resistance Range")
+    st.subheader("📏 Resistance Range")
 
-    r1, r2, r3 = st.columns(3)
+    c1, c2, c3 = st.columns(3)
 
-    with r1:
-        st.metric(
-            "Nominal",
-            format_resistance(resistance)
-        )
+    with c1:
 
-    with r2:
         st.metric(
             "Minimum",
             format_resistance(minimum)
         )
 
-    with r3:
+    with c2:
+
+        st.metric(
+            "Nominal",
+            format_resistance(resistance)
+        )
+
+    with c3:
+
         st.metric(
             "Maximum",
             format_resistance(maximum)
@@ -664,170 +498,142 @@ Tolerance           : ±{tolerance:g}%""",
 
 
     # ========================================================
-    # ACTIONS
+    # RESET
     # ========================================================
 
-    st.markdown("### 🔗 Share")
+    if st.button(
+        "↻ Reset Decoder",
+        use_container_width=True
+    ):
+        reset()
 
-    app_url = "https://resistor-color-code-decoder.streamlit.app"
 
-    message = (
-        "Check out my Python Resistor Color Code Decoder: "
-        + app_url
-    )
+# ============================================================
+# RIGHT PANEL
+# ============================================================
 
-    whatsapp_url = (
-        "https://api.whatsapp.com/send?text="
-        + urllib.parse.quote(message)
-    )
+with right:
 
-    st.markdown(
-        f"""
-        <a href="{whatsapp_url}"
-           target="_blank"
-           style="text-decoration:none;">
+    st.subheader("🎨 Colors")
 
-            <div style="
-                background:#25D366;
-                color:white;
-                text-align:center;
-                padding:12px;
-                border-radius:10px;
-                font-weight:700;
-                font-size:16px;
-            ">
-                💬 Share on WhatsApp
-            </div>
-
-        </a>
-        """,
-        unsafe_allow_html=True
-    )
+    st.write("🔵 🟠 🟤")
+    st.write("🟣 🟢 🔴")
+    st.write("🟡 ⚫ 🔴")
+    st.write("⚪ 🟤 🩶")
 
 
 # ============================================================
 # COLOR REFERENCE
 # ============================================================
 
-st.markdown("---")
+st.divider()
 
-st.markdown("### 📚 Resistor Color Reference")
+st.header("📚 Resistor Color Reference")
 
-reference = [
-    ("Black", "0", "×10⁰", "—"),
-    ("Brown", "1", "×10¹", "±1%"),
-    ("Red", "2", "×10²", "±2%"),
-    ("Orange", "3", "×10³", "—"),
-    ("Yellow", "4", "×10⁴", "—"),
-    ("Green", "5", "×10⁵", "±0.5%"),
-    ("Blue", "6", "×10⁶", "±0.25%"),
-    ("Violet", "7", "×10⁷", "±0.1%"),
-    ("Gray", "8", "×10⁸", "±0.05%"),
-    ("White", "9", "×10⁹", "—"),
-    ("Gold", "—", "×10⁻¹", "±5%"),
-    ("Silver", "—", "×10⁻²", "±10%")
-]
+reference_data = []
 
-cols = st.columns(4)
+for color in digits:
 
-for col, title in zip(
-    cols,
-    ["Color", "Digit", "Multiplier", "Tolerance"]
-):
-    col.markdown(f"**{title}**")
+    tolerance_value = tolerances.get(color, "—")
 
-for color, digit, multiplier, tolerance in reference:
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    text_color = (
-        "#111111"
-        if color in ["White", "Yellow", "Gold", "Silver"]
-        else "#FFFFFF"
-    )
-
-    with c1:
-        st.markdown(
-            f"""
-            <div style="
-                background:{COLOR_HEX[color]};
-                color:{text_color};
-                padding:7px;
-                border-radius:7px;
-                text-align:center;
-                font-weight:700;
-                margin-bottom:5px;
-            ">
-                {color}
-            </div>
-            """,
-            unsafe_allow_html=True
+    reference_data.append({
+        "Color": color,
+        "Digit": digits[color],
+        "Multiplier": multipliers[color],
+        "Tolerance": (
+            f"±{tolerance_value}%"
+            if tolerance_value != "—"
+            else "—"
         )
+    })
 
-    with c2:
-        st.write(digit)
 
-    with c3:
-        st.write(multiplier)
+# Add Gold and Silver separately
 
-    with c4:
-        st.write(tolerance)
+reference_data.append({
+    "Color": "Gold",
+    "Digit": "—",
+    "Multiplier": "×0.1",
+    "Tolerance": "±5%"
+})
+
+reference_data.append({
+    "Color": "Silver",
+    "Digit": "—",
+    "Multiplier": "×0.01",
+    "Tolerance": "±10%"
+})
+
+
+st.dataframe(
+    reference_data,
+    use_container_width=True,
+    hide_index=True
+)
 
 
 # ============================================================
 # ABOUT
 # ============================================================
 
-st.markdown("---")
+st.divider()
 
-a1, a2 = st.columns(2)
+about1, about2 = st.columns(2)
 
-with a1:
+with about1:
 
-    st.markdown("""
-    ### 💡 About This Project
+    st.subheader("💡 About")
 
-    A Python-based resistor color code decoder that supports
-    **3-band, 4-band and 5-band resistors**.
+    st.write(
+        "This application decodes resistor color bands and "
+        "calculates resistance, tolerance and resistance range."
+    )
 
-    It calculates the nominal resistance, tolerance and
-    acceptable resistance range while providing a dynamic
-    visual representation of the resistor.
-    """)
+    st.write(
+        "It supports 3-band, 4-band and 5-band resistor "
+        "configurations."
+    )
 
 
-with a2:
+with about2:
 
-    st.markdown("""
-    ### 🛠 Technologies
+    st.subheader("🛠 Technologies")
 
-    **Python**  
-    **Streamlit**  
-    Python Dictionaries  
-    Conditional Logic  
-    SVG Visualization  
-    Responsive Web Interface
-    """)
+    st.write("• Python")
+    st.write("• Streamlit")
+    st.write("• Python Dictionaries")
+    st.write("• Conditional Logic")
+    st.write("• Matplotlib")
+    st.write("• Electronics fundamentals")
+
+
+# ============================================================
+# WHATSAPP SHARE
+# ============================================================
+
+st.divider()
+
+app_url = "https://resistor-color-code-decoder.streamlit.app"
+
+message = (
+    "Check out my Python Resistor Color Code Decoder: "
+    + app_url
+)
+
+whatsapp_url = (
+    "https://api.whatsapp.com/send?text="
+    + urllib.parse.quote(message)
+)
+
+st.markdown(
+    f"Share your project: {whatsapp_url}"
+)
 
 
 # ============================================================
 # FOOTER
 # ============================================================
 
-st.markdown("---")
-
-st.markdown(
-    """
-    <div style="
-        text-align:center;
-        color:#88899a;
-        padding:15px;
-        font-size:13px;
-    ">
-        Ω Resistor Color Code Decoder
-        <br>
-        Built with Python & Streamlit
-    </div>
-    """,
-    unsafe_allow_html=True
+st.caption(
+    "Ω Resistor Color Code Decoder • Built with Python & Streamlit"
 )
