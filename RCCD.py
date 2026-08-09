@@ -58,22 +58,23 @@ tolerances = {
 
 
 # ============================================================
-# COLOR EMOJIS
+# TRUE HEX COLORS (used for actual swatches, not emoji)
+# Fixes Gray / White / Silver all rendering as the same "⬜"
 # ============================================================
 
-color_emoji = {
-    "Black": "⬛",
-    "Brown": "🟫",
-    "Red": "🟥",
-    "Orange": "🟧",
-    "Yellow": "🟨",
-    "Green": "🟩",
-    "Blue": "🟦",
-    "Violet": "🟪",
-    "Gray": "⬜",
-    "White": "⬜",
-    "Gold": "🟨",
-    "Silver": "⬜"
+color_hex = {
+    "Black": "#2b2b2b",
+    "Brown": "#8b5a2b",
+    "Red": "#e53935",
+    "Orange": "#fb8c00",
+    "Yellow": "#fdd835",
+    "Green": "#43a047",
+    "Blue": "#1e88e5",
+    "Violet": "#8e24aa",
+    "Gray": "#9e9e9e",
+    "White": "#fafafa",
+    "Gold": "#d4af37",
+    "Silver": "#c0c0c0"
 }
 
 
@@ -92,14 +93,27 @@ def format_resistance(value):
         return f"{value:g} Ω"
 
 
-def band_display(color):
-    return f"{color_emoji.get(color, '⬜')} {color}"
+def swatch_html(color, size=28):
+    """Render a real colored square for a band color (fixes the
+    Gray/White/Silver-look-identical problem from emoji squares)."""
+    hex_code = color_hex.get(color, "#cccccc")
+    border = "1px solid #999" if color in ("White", "Silver", "Gray") else "1px solid transparent"
+    return (
+        f'<div style="display:inline-block;width:{size}px;height:{size}px;'
+        f'background-color:{hex_code};border:{border};border-radius:4px;'
+        f'margin-right:4px;vertical-align:middle;" title="{color}"></div>'
+    )
+
+
+def band_row_html(colors, size=28):
+    """Render a horizontal strip of band swatches."""
+    return "".join(swatch_html(c, size) for c in colors)
 
 
 def reset_decoder():
-    keys = list(st.session_state.keys())
-    for key in keys:
-        del st.session_state[key]
+    for key in list(st.session_state.keys()):
+        if key.startswith("band_"):
+            del st.session_state[key]
     st.rerun()
 
 
@@ -137,10 +151,10 @@ left_col, main_col, right_col = st.columns(
 
 with left_col:
     st.subheader("⚡ Lab Kit")
-    st.write("🟥 🟨 🟫")
-    st.write("🟫 ⬛ 🟧")
-    st.write("🟦 🟪 🟩")
-    st.write("🟧 🟨 🟥")
+    st.markdown(band_row_html(["Red", "Yellow", "Brown"], size=20), unsafe_allow_html=True)
+    st.markdown(band_row_html(["Brown", "Black", "Orange"], size=20), unsafe_allow_html=True)
+    st.markdown(band_row_html(["Blue", "Violet", "Green"], size=20), unsafe_allow_html=True)
+    st.markdown(band_row_html(["Orange", "Yellow", "Red"], size=20), unsafe_allow_html=True)
     st.divider()
     st.caption("Electronics")
     st.caption("Resistors")
@@ -153,10 +167,10 @@ with left_col:
 
 with right_col:
     st.subheader("🎨 Colors")
-    st.write("🟦 🟧 🟫")
-    st.write("🟪 🟩 🟥")
-    st.write("🟨 ⬛ 🟥")
-    st.write("⬜ 🟫 ⬜")
+    st.markdown(band_row_html(["Blue", "Orange", "Brown"], size=20), unsafe_allow_html=True)
+    st.markdown(band_row_html(["Violet", "Green", "Red"], size=20), unsafe_allow_html=True)
+    st.markdown(band_row_html(["Yellow", "Black", "Red"], size=20), unsafe_allow_html=True)
+    st.markdown(band_row_html(["White", "Brown", "Gray"], size=20), unsafe_allow_html=True)
     st.divider()
     st.caption("0–9")
     st.caption("Multiplier")
@@ -174,7 +188,8 @@ with main_col:
         "Select Number of Bands",
         [3, 4, 5],
         horizontal=True,
-        format_func=lambda x: f"{x}-Band"
+        format_func=lambda x: f"{x}-Band",
+        key="band_count"
     )
 
     st.divider()
@@ -190,11 +205,11 @@ with main_col:
     if band_count == 3:
         col1, col2, col3 = st.columns(3)
         with col1:
-            b1 = st.selectbox("1st Band", first_band_colors)
+            b1 = st.selectbox("1st Band", first_band_colors, key="band_1")
         with col2:
-            b2 = st.selectbox("2nd Band", list(digits.keys()))
+            b2 = st.selectbox("2nd Band", list(digits.keys()), key="band_2")
         with col3:
-            multiplier = st.selectbox("Multiplier", list(multipliers.keys()))
+            multiplier = st.selectbox("Multiplier", list(multipliers.keys()), key="band_mult")
 
         base_value = digits[b1] * 10 + digits[b2]
         tolerance_value = 20
@@ -206,16 +221,17 @@ with main_col:
     elif band_count == 4:
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            b1 = st.selectbox("1st Band", first_band_colors)
+            b1 = st.selectbox("1st Band", first_band_colors, key="band_1")
         with col2:
-            b2 = st.selectbox("2nd Band", list(digits.keys()))
+            b2 = st.selectbox("2nd Band", list(digits.keys()), key="band_2")
         with col3:
-            multiplier = st.selectbox("Multiplier", list(multipliers.keys()))
+            multiplier = st.selectbox("Multiplier", list(multipliers.keys()), key="band_mult")
         with col4:
             tolerance_band = st.selectbox(
                 "Tolerance",
                 list(tolerances.keys()),
-                index=list(tolerances.keys()).index("Gold")
+                index=list(tolerances.keys()).index("Gold"),
+                key="band_tol"
             )
 
         base_value = digits[b1] * 10 + digits[b2]
@@ -228,18 +244,19 @@ with main_col:
     else:
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
-            b1 = st.selectbox("1st Band", first_band_colors)
+            b1 = st.selectbox("1st Band", first_band_colors, key="band_1")
         with col2:
-            b2 = st.selectbox("2nd Band", list(digits.keys()))
+            b2 = st.selectbox("2nd Band", list(digits.keys()), key="band_2")
         with col3:
-            b3 = st.selectbox("3rd Band", list(digits.keys()))
+            b3 = st.selectbox("3rd Band", list(digits.keys()), key="band_3")
         with col4:
-            multiplier = st.selectbox("Multiplier", list(multipliers.keys()))
+            multiplier = st.selectbox("Multiplier", list(multipliers.keys()), key="band_mult")
         with col5:
             tolerance_band = st.selectbox(
                 "Tolerance",
                 list(tolerances.keys()),
-                index=list(tolerances.keys()).index("Gold")
+                index=list(tolerances.keys()).index("Gold"),
+                key="band_tol"
             )
 
         base_value = digits[b1] * 100 + digits[b2] * 10 + digits[b3]
@@ -258,12 +275,14 @@ with main_col:
     # RESISTOR PREVIEW
     # ========================================================
     st.subheader("🎨 Resistor Preview")
-    preview = "──── "
-    for band in bands:
-        preview += color_emoji.get(band, "⬜") + " "
-    preview += "────"
-
-    st.write(preview, unsafe_allow_html=False)
+    preview_html = (
+        '<div style="display:flex;align-items:center;padding:10px 0;">'
+        '<div style="width:40px;height:6px;background:#c9a876;"></div>'
+        f'{band_row_html(bands, size=32)}'
+        '<div style="width:40px;height:6px;background:#c9a876;"></div>'
+        '</div>'
+    )
+    st.markdown(preview_html, unsafe_allow_html=True)
     st.caption(" • ".join(bands))
 
     # ========================================================
